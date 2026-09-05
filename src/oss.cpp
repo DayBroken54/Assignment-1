@@ -1,68 +1,102 @@
-/*The task of oss is to launch a certain number of user processes with
-particular parameters. These numbers are determined by its own command line
-arguments. Your solution will be invoked using the following command:
- oss [-h] [-n proc] [-s simul] [-t iter]
-
-The proc parameter stands for number of total
-children to launch, iter is the number to pass to the user process and the simul
-parameter indicates how many children to allow to run simultaneously.
-
-For example, if I wanted to launch oss such that it would launch 5 user
-processes, never allow more than 3 to be running at the same time, and then have
-each of the users do 7 iterations, it would be called with: oss -n 5 -s 3 -t 7
-
-If called with the -h parameter, it should simply output a help message
-(indicating how it is supposed to be run) and then terminating.
-
-So now that I know what parameters it should run with, what should it do? oss
-when launched should go into a loop and start doing a fork() and then an exec()
-call to launch user processes. However, it should only do this up to simul
-number of times. In our above example, we would launch no more than 3 initially.
-The oss would then wait() until one of the children had finished before
-launching another. After oss has finished launching up to n processes, it should
-continue running until all children that it launched have terminated. It can do
-this by wait()ing a number of times based on how many children are still in the
-system. Oss should output a message whenever it launches a new process. At the
-end, it should also output a summary of how many children it launched.*/
+#include <iostream>
+#include <string>
+#include <sys/wait.h>
+#include <unistd.h>
 
 int main(int argc, char *argv[]) {
-  /*
-  parse command-line arguments
-    n: total children to launch
-    s: how many children to allow simultaneously
-    t: how many iterations per child
-    h: display help message, terminate
-    other: send error message, terminate
-  */
+  int opt;
 
-  /*
-  if arguments are invalid (n <= 0, s <= 0, t <= 0):
-    send error message
-    terminate
-  */
+  int n_proc{0};
+  int s_simul{0};
+  int t_iter{0};
+  char *t_iter_ptr{nullptr};
 
-  /*
-  loop whle total processes launched (tpl) < n
-    loop while current running processes (crp) < s and tpl < n
-      fork()
-      in child process:
-        exec() ./user
-      in parent process:
-        send message that child was launched
-        update crp
-        update tpl
+  // parse command-line arguments
+  while ((opt = getopt(argc, argv, "n:s:t:h")) != -1) {
+    switch (opt) {
+    case 'n':
+      n_proc = std::stoi(optarg);
+      break;
+    case 's':
+      s_simul = std::stoi(optarg);
+      break;
+    case 't':
+      t_iter = std::stoi(optarg);
+      t_iter_ptr = optarg;
+      break;
+    case 'h':
+      std::cout << "Usage\n\n"
+                << "\t-n: number of processes.\n"
+                << "\t-s: number of simultaneous processes\n"
+                << "\t-t: number of iterations per process\n"
+                << "\t-h: display help menu\n";
+      return 0;
+    default:
+      std::cerr << "Invalid argument flags detected. Use -h for help. STOP"
+                << std::endl;
+      return 1;
+    }
+  }
 
-    wait for a process to finish
-    update crp
-*/
+  // check for valid argument values
+  if (n_proc <= 0 || s_simul <= 0 || t_iter <= 0) {
+    std::cerr << "Invalid argument values detected. Provide values greater "
+                 "than 0. STOP"
+              << std::endl;
+    return 1;
+  }
 
-  /*
-  loop while crp > 0
-    wait for a process to finish
-    update crp
-*/
+  int total_launched{0};
+  int current_running{0};
 
-  // output summary of how many children launched
+  // launch processes simultaneously
+  while (total_launched < n_proc) {
+    while (current_running < s_simul && total_launched < n_proc) {
+      auto pid = fork();
 
+      // fork failed
+      if (pid == -1) {
+        std::cerr << "fork failed" << std::endl;
+        return 1;
+      }
+      // child
+      if (pid == 0) {
+        execl("./user", "user", t_iter_ptr, (char *)nullptr);
+
+        // execl failed
+        std::cerr << "execl failed" << std::endl;
+        return 1;
+      }
+      // parent
+      else {
+        std::cout << "child process launched" << std::endl;
+        ++current_running;
+        ++total_launched;
+      }
+    }
+
+    int status;
+
+    if (wait(&status) == -1) {
+      std::cerr << "wait failed" << std::endl;
+      return 1;
+    }
+
+    --current_running;
+  }
+
+  // wait for final processes to finish
+  while (current_running > 0) {
+    int status;
+
+    if (wait(&status) == -1) {
+      std::cerr << "wait failed" << std::endl;
+      return 1;
+    }
+
+    --current_running;
+  }
+
+  std::cout << "total children launched: " << total_launched << std::endl;
   return 0;
 }
