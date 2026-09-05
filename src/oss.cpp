@@ -13,25 +13,32 @@ int main(int argc, char *argv[]) {
 
   // parse command-line arguments
   while ((opt = getopt(argc, argv, "n:s:t:h")) != -1) {
-    switch (opt) {
-    case 'n':
-      n_proc = std::stoi(optarg);
-      break;
-    case 's':
-      s_simul = std::stoi(optarg);
-      break;
-    case 't':
-      t_iter = std::stoi(optarg);
-      t_iter_ptr = optarg;
-      break;
-    case 'h':
-      std::cout << "Usage\n\n"
-                << "\t-n: number of processes.\n"
-                << "\t-s: number of simultaneous processes\n"
-                << "\t-t: number of iterations per process\n"
-                << "\t-h: display help menu\n";
-      return 0;
-    default:
+    try {
+      switch (opt) {
+      case 'n':
+        n_proc = std::stoi(optarg);
+        break;
+      case 's':
+        s_simul = std::stoi(optarg);
+        break;
+      case 't':
+        t_iter = std::stoi(optarg);
+        t_iter_ptr = optarg;
+        break;
+      case 'h':
+        std::cout << "Usage\n\n"
+                  << "\t-n: number of processes.\n"
+                  << "\t-s: number of simultaneous processes\n"
+                  << "\t-t: number of iterations per process\n"
+                  << "\t-h: display help menu\n";
+        return 0;
+      default:
+        std::cerr << "Invalid argument flags detected. Use -h for help. STOP"
+                  << std::endl;
+        return 1;
+      }
+
+    } catch (const std::exception &e) {
       std::cerr << "Invalid argument flags detected. Use -h for help. STOP"
                 << std::endl;
       return 1;
