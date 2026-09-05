@@ -1,23 +1,37 @@
-/*The user takes in one command line argument. For example, if you were running
-it directly you would call it like:
-./user 5
-As it is being called with the number 5, it would do 5 iterations over a loop.
-So what does it do in that loop? Each iteration it will output its PID, its
-parents PID, and what iteration of the loop it is in. For example, suppose its
-PID is 6577, its parents PID is 6576 and it is the 3rd iteration of the loop, it
-would output: USER PID:6577 PPID:6576 Iteration:3 before sleeping After doing
-this output, it should do sleep(1), to sleep for one second, and then output:
-USER PID:6577 PPID:6576 Iteration:3 after sleeping*/
+#include <exception>
+#include <iostream>
+#include <string>
+#include <unistd.h>
 
 int main(int argc, char *argv[]) {
   // parse command-line arguments
-  // ensure argc == 2
-  // ensure argv[1] is an integer
+  if (argc != 2) {
+    std::cerr << "Expected 1 argument but found " << argc - 1 << std::endl;
+    return 1;
+  }
 
-  // loop from 1 to argv[1] inclusive:
-  // output before sleep message
-  // sleep(1)
-  // output after sleep message
+  int iterations;
+
+  try {
+    iterations = std::stoi(argv[1]);
+  } catch (const std::exception &e) {
+    std::cerr << e.what() << std::endl;
+    return 1;
+  }
+
+  // output messages
+  auto pid = getpid();
+  auto ppid = getppid();
+
+  for (int i{1}; i <= iterations; ++i) {
+    std::cout << "USER PID:" << pid << " PPID:" << ppid << " Iteration:" << i
+              << " before sleeping" << std::endl;
+
+    sleep(1);
+
+    std::cout << "USER PID:" << pid << " PPID:" << ppid << " Iteration:" << i
+              << " after sleeping" << std::endl;
+  }
 
   return 0;
 }
