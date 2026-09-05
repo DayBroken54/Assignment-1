@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 
   // loop from 1 to argv[1] inclusive:
   // output before sleep message
-  // sleep
+  // sleep(1)
   // output after sleep message
 
   return 0;
