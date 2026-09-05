@@ -26,29 +26,41 @@ system. Oss should output a message whenever it launches a new process. At the
 end, it should also output a summary of how many children it launched.*/
 
 int main(int argc, char *argv[]) {
-  // parse command-line arguments
-  // n: total children to launch
-  // s: how many children to allow simultaneously
-  // t: how many iterations per child
-  // h: display help message
+  /*
+  parse command-line arguments
+    n: total children to launch
+    s: how many children to allow simultaneously
+    t: how many iterations per child
+    h: display help message, terminate
+    other: send error message, terminate
+  */
 
-  // loop from 0 to s
-  // launch new process
-  // send message that child was launched
-  // take over child process with ./user
+  /*
+  if arguments are invalid (n <= 0, s <= 0, t <= 0):
+    send error message
+    terminate
+  */
 
-  // loop until total processes launched = n
-  // wait for a process to finish
-  // output child process messages
-  // launch new process
-  // send message that child was launched
-  // take over child process with ./user
-  // update total processes launched
+  /*
+  loop whle total processes launched (tpl) < n
+    loop while current running processes (crp) < s and tpl < n
+      fork()
+      in child process:
+        exec() ./user
+      in parent process:
+        send message that child was launched
+        update crp
+        update tpl
 
-  // loop until total processes finished = 0
-  // wait for a process to finish
-  // output child process messages
-  // update total processes finished
+    wait for a process to finish
+    update crp
+*/
+
+  /*
+  loop while crp > 0
+    wait for a process to finish
+    update crp
+*/
 
   // output summary of how many children launched
 
