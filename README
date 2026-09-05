@@ -16,3 +16,5 @@ Example of how to run the project:
   ./oss -n 3 -s 2 -t 40
 
 Generative AI:
+  No generative AI was used to produce any code written.
+  I feel I learn much better from writing code myself with as little help from generative AI as possible.
