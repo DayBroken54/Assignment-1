@@ -1,4 +1,4 @@
-CXX = g++
+CXX = usr/bin/g++
 CXXFLAGS = -std=c++17 -Wall -Wextra
 BUILD_DIR = build
 
