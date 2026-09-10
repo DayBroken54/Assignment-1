@@ -46,9 +46,10 @@ int main(int argc, char *argv[]) {
   }
 
   // check for valid argument values
-  if (n_proc <= 0 || s_simul <= 0 || t_iter <= 0) {
+  if (n_proc <= 0 || s_simul <= 0 || s_simul > 18 || t_iter <= 0) {
     std::cerr << "Invalid argument values detected. Provide values greater "
-                 "than 0. STOP"
+                 "than 0. Provide number of simultaneous processes between 0 "
+                 "and 18. STOP"
               << std::endl;
     return 1;
   }
