@@ -5,11 +5,11 @@ BUILD_DIR = build
 all: $(BUILD_DIR)/oss $(BUILD_DIR)/user
 
 #Target-specific flags
-Debug: CXXFLAGS += -g -DDEBUG
-Debug: all
+debug: CXXFLAGS += -g -DDEBUG
+debug: all
 
-Release: CXXFLAGS += -O3
-Release: all
+release: CXXFLAGS += -O3
+release: all
 
 #create build/ if it does not exist
 $(BUILD_DIR):
